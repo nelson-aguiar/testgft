@@ -3,39 +3,25 @@ package nelsonaguiar.testgft.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import nelsonaguiar.testgft.bean.ControladoraRestauranteInterface;
 import nelsonaguiar.testgft.bean.Prato;
-import nelsonaguiar.testgft.bean.TipoPrato;
+import nelsonaguiar.testgft.dao.PratoDAO;
 
 public class PratosManhaController implements ControladoraRestauranteInterface {
 
-	private Prato prato;
-	private HashMap<Integer, Prato> pratos;
+	private Map<Integer, Prato> pratos;
+	
+	public PratosManhaController() {
+		loadData();
+	}
 
 	@Override
 	public Map<Integer, Prato> loadData() {
-		this.pratos = new HashMap<Integer, Prato>();
-
-		this.prato = new Prato();
-		this.prato.setDescr("eggs");
-		this.prato.setTipoPrato(TipoPrato.ENTRADA);
-		this.pratos.put(this.prato.getTipoPrato().getId(), this.prato);
-
-		this.prato = new Prato();
-		this.prato.setDescr("toast");
-		this.prato.setTipoPrato(TipoPrato.LADO);
-		this.pratos.put(this.prato.getTipoPrato().getId(), this.prato);
-
-		this.prato = new Prato();
-		this.prato.setDescr("coffee");
-		this.prato.setTipoPrato(TipoPrato.BEBIDA);
-		this.pratos.put(this.prato.getTipoPrato().getId(), this.prato);
-		
-		return pratos;
+		this.pratos = new PratoDAO().loadDataManha();		
+		return this.pratos;
 	}
 
 	@Override
@@ -49,11 +35,17 @@ public class PratosManhaController implements ControladoraRestauranteInterface {
 		String[] arrPratos = pratos.split(",");
 		Arrays.sort(arrPratos);
 		for(int i = 0; i < arrPratos.length ; i++) {
-			int aux = Integer.parseInt(arrPratos[i]);
-			if(validaSequenciaPratos(aux) && verificaDuplicados(lstPratos, this.pratos.get(aux).getDescr())) {
-				lstPratos.add(this.pratos.get(aux).getDescr());				
+			try {
+				int aux = Integer.parseInt(arrPratos[i]);
+				if(validaSequenciaPratos(aux) && verificaDuplicados(lstPratos, this.pratos.get(aux).getDescr())) {
+					lstPratos.add(this.pratos.get(aux).getDescr());				
+				}
+				else {
+					lstPratos.add("erro");
+					break;
+				}				
 			}
-			else {
+			catch (NumberFormatException e) {
 				lstPratos.add("erro");
 				break;
 			}
